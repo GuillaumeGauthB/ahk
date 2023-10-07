@@ -13,8 +13,9 @@
 Send, test info
 return
 
+; #if WinExists
 ^+r::
-if Run "C:\Users\guill\OneDrive\Documents\AutoHotkey\test_applicationSwitcher.ahk" {
+if Run "C:\Users\guill\OneDrive\Documents\AutoHotkey\application_switcher\ApplicationSwitcher.ahk" {
     TrayTip Refresh, Script has refreshed, 10
 }
 return
