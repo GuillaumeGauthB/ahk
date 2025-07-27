@@ -23,3 +23,13 @@ UrlEncode(str, sExcepts := "-_.", enc := "UTF-8")
 	}
 	return encoded
 }
+
+; Copy this function into your script to use it.
+HideTrayTip() {
+    TrayTip  ; Attempt to hide it the normal way.
+    if SubStr(A_OSVersion,1,3) = "10." {
+        A_IconHidden := true
+        Sleep 200  ; It may be necessary to adjust this sleep.
+        A_IconHidden := false
+    }
+}
