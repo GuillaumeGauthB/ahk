@@ -1,4 +1,5 @@
 #Requires AutoHotkey v2.0
+#include ../functions/_functions.ahk
 
 ; if searchBar exists..
 #HotIf WinExist(GUIName)
@@ -55,5 +56,17 @@
 
 	active_state := !active_state
 
-	; MsgBox(active_state)
+	; handle notification message
+	state_message := "Press the hotkeys again to reactivate it."
+	state_title := "The search bar has been deactivated"
+
+	if(active_state){
+		state_message := "Press the hotkeys again to deactivate it."
+		state_title := "The search bar has been activated"
+	}
+
+	; sending notification
+	TrayTip state_message, state_title, "Iconi"
+	Sleep 5000   ; Let it display for 8 seconds.
+	HideTrayTip
 }

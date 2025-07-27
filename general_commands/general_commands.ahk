@@ -2,64 +2,128 @@
 #SingleInstance Force
 #include ../json/general_commands.ahk
 
-; boot all work apps
-^+w::
+#include work.ahk
+#include random.ahk
+
+; Tooltip title for the hotkey list GUI
+hotkey_list_tooltip := "Hotkeys List - general_commands.ahk"
+
+; Reload script
+; This hotkey reloads the script and displays a tray notification.
+^+R::
 {
-    Run "C:\Program Files (x86)\Rapid PHP 2018\rapidphp.exe"
-    Run "Skype"
-    Run "C:\Program Files\Firefox Developer Edition\firefox.exe"
-    Run "C:\Users\guill\AppData\Local\Programs\Microsoft VS Code\Code.exe"
-    Run "C:\Program Files\Microsoft VS Code Insiders\Code - Insiders.exe"
-    Run "C:\xampp\xampp-control.exe"
-    ; Run "C:\Program Files\Google\Chrome\Application\chrome.exe https://teams.live.com/"
-    ; Run "C:\Program Files\WindowsApps\MicrosoftTeams_23335.242.2641.4129_x64__8wekyb3d8bbwe\msteams.exe"
+    Reload
+    TrayTip "The script has been reloaded.", "general_commands.ahk", "Iconi"
 }
 
-; check for ip
-^+i::
+; Display a list of hotkeys in a GUI window
+^+K::
 {
-    global configMap
+    global hotkey_list_tooltip
+    ; Declare variables
+    GUIName := hotkey_list_tooltip ; Name of the GUI window
 
-    winTitle := WinGetTitle("A")
+    ; If the tooltip window already exists, close it
+    if(WinExist(GUIName)) {
+        WinClose(GUIName)
+        return
+    }
 
-    Send "{Text}if ( $_SERVER['REMOTE_ADDR'] == '" . configMap['ipAddress'] . "') { `recho'<pre>'.print_r($_POST, true).'</pre>'; `r}"
-    
-    ; move bracket
-    SendInput "{LShift down}{tab}{LShift up}"
+    ; Define tabs and hotkeys
+    tabs := Array() ; Array to store tab names
+    hotkeys := Map( ; Map containing hotkey categories and their respective hotkeys
+        "Emojis", Map(
+            "Discord Skull Emoji", "Ctrl + Alt + S",
+            "Discord peo_denial Emoji", "Ctrl + Alt + P",
+            "Nodding Emoji", "Ctrl + Alt + N",
+        ),
+        "General", Map(
+            "Reload script", "Ctrl + Shift + R",
+            "List Hotkeys", "Ctrl + Shift + K",
+        ),
+        "Toggles", Map(
+            "Lock Wheel Up", "Ctrl + Shift + M",
+            "Lock Wheel Down", "Ctrl + Shift + N",
+            "Auto Clicker", "Ctrl + Shift + Enter",
+        ),
+        "Work", Map(
+            "Boot All Work Apps", "Ctrl + Shift + W",
+            "Add IP Check", "Ctrl + Shift + I",
+            "Lastpass", "Ctrl + Alt + Left Click",
+        )
+    ) ; End of hotkeys map
 
-    SendInput "{Right}"
+    ; Create a GUI window that is always on top
+    GUIAP := Gui("AlwaysOnTop ToolWindow -Caption", GUIName) 
 
-    SendInput "{Enter}"
+    ; Populate the tabs array with the names of the hotkey categories
+    for title in hotkeys 
+        tabs.Push title
 
-    ; delete content past the bracket
-    SendInput "{LShift down}{End}{LShift up}"
-    
-    SendInput "{Backspace}{Backspace}"
+    ; Add tabs to the GUI
+    GUIAP_tabs := GUIAP.Add("Tab3",, tabs) 
 
-    if(InStr(winTitle, 'VSCodium', false) || InStr(winTitle, 'Visual Studio Code', false))
-        SendInput "{Backspace}"
+    ; Add content to each tab
+    for tab in tabs {
+        hotkeys_list := "" ; Initialize the hotkeys list for the current tab
+
+        ; Skip to the next iteration if the tab does not exist in the hotkeys map
+        if (!hotkeys.Has(tab))
+            continue
+
+        ; Build the hotkeys list for the current tab
+        for name, hotkey in hotkeys.Get(tab) {
+            hotkeys_list := hotkeys_list . name . ": " . hotkey . "`n"
+        }
+
+        ; Display the hotkeys in the current tab
+        GUIAP_tabs.UseTab(tab)
+        GUIAP.Add("Text", "w300 v" . tab, hotkeys_list)
+    }
+
+    ; Show the GUI window at the top-right corner of the screen
+    GUIAP.Show("NoActivate X" (A_ScreenWidth - 350) " w350 Y0 h" A_ScreenHeight )
 }
 
-; lastpass
-!^LButton::
-{
-    Send "{Text}UsCD*R:Nu5pW~S!"
+; Close the hotkey list window using various mouse buttons
+#HotIf WinExist(hotkey_list_tooltip)
+Esc:: 
+RButton::
+MButton:: WinClose(hotkey_list_tooltip)
+#HotIf
+
+; Close the hotkey list window if the mouse is outside the window and the window is active
+#HotIf WinExist(hotkey_list_tooltip) and !mouseInWindow(hotkey_list_tooltip) and WinActive(hotkey_list_tooltip)
+LButton:: WinClose(hotkey_list_tooltip)   
+#HotIf
+
+; Function to check if the mouse is inside a specified window
+mouseInWindow(win_name) {
+    WinGetPos &window_x, &window_y, &window_width, &window_height, win_name
+
+    MouseGetPos &xpos, &ypos 
+
+    ; Store mouse position in a map
+    ClickInfo := Map("x", xpos, "y", ypos) ; Coordinates are relative to the active window
+
+    xpos := ""
+    ypos := ""
+
+    ; Check if the mouse is within the window's boundaries
+    if(
+        (
+            ClickInfo['x'] >= 0 &&
+            ClickInfo['x'] <= window_width
+        )
+        &&
+        (
+            ClickInfo['y'] >= 0 &&
+            ClickInfo['y'] <= window_height
+        )
+    )
+    {
+        return true
+    }
+
+    return false
 }
-
-^+m::
-{
-    ; SendInput "{TAB}"
-
-    
-    ; SendInput "{TAB down}"
-    ; sleep 500
-    ; SendInput "{TAB up}"
-    
-    ; SendInput "{LShift up}"
-    
-    winTitle := WinGetTitle("A")
-    MsgBox(winTitle)
-
-}
-
-
