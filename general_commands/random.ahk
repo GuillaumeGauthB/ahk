@@ -1,5 +1,6 @@
 #Requires AutoHotkey v2.0
 
+#HotIf configMap['activeModules']['random']
 ; emojis
 
 !^s::
@@ -156,3 +157,4 @@ ClickLoop()
 /* 
    ========================== Lock Wheel Scroll END ==========================
 */
+#HotIf

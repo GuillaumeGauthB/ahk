@@ -1,38 +1,37 @@
 #Requires AutoHotkey v2.0
 #include ../packages/JXON_ahk2/_JXON.ahk
+#include ./_functions.ahk
 
 templateConfigMap := Map(
     "ipAddress", "",
     "savedPassword", "template_password",
-    "oldSavedPassword", "template_old_password"
+    "oldSavedPassword", "template_old_password",
+    "activeModules", Map(
+        "work", true,
+        "random", true,
+    )
 )
 
+configFileName := "../json/general_commands_configs.json"
+
 ; if config file does not exist, create it
-if not FileExist("../json/configs.json") {
+if not FileExist(configFileName) {
     templateConfigMapJSON := jxon_dump(templateConfigMap, 1)
-    FileAppend templateConfigMapJSON, "../json/configs.json"
+    FileAppend templateConfigMapJSON, configFileName
 
     configMap := templateConfigMap
 } else {
-    configFileContent := FileRead("../json/configs.json")
+    configFileContent := FileRead(configFileName)
     configFileMap := jxon_load(&configFileContent)
-    rewriteConfigFile := false
 
-    ; if there is a key in the template configs that is not in the current file,
-    ; add it
-    for key, value in templateConfigMap {
-        if configFileMap.Has(key)
-            continue
+    checkMissingConfigsResult := checkMissingConfigs(templateConfigMap, configFileMap)
+    configFileMap := checkMissingConfigsResult['currentConfig']
 
-        configFileMap[key] := value
-        rewriteConfigFile := true
-    }
-
-    if rewriteConfigFile {
-        FileDelete "../json/configs.json"
+    if checkMissingConfigsResult['rewriteConfigFile'] {
+        FileDelete configFileName
 
         configMapJSON := jxon_dump(configFileMap, 1)
-        FileAppend configMapJSON, "../json/configs.json"    
+        FileAppend configMapJSON, configFileName   
     }
 
     configMap := configFileMap

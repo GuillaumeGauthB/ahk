@@ -1,5 +1,6 @@
 #Requires AutoHotkey v2.0
 
+#HotIf configMap['activeModules']['work']
 ; boot all work apps
 ^+w::
 {
@@ -44,3 +45,4 @@
 {
     Send "{Text}" . configMap['savedPassword']
 }
+#HotIf
