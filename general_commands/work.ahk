@@ -42,5 +42,5 @@
 ; lastpass
 !^LButton::
 {
-    Send "{Text}" . configMap['pw']
+    Send "{Text}" . configMap['savedPassword']
 }
