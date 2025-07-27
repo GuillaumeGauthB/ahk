@@ -1,5 +1,6 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+; #include ./configs.ahk
 #include ../json/general_commands.ahk
 
 ; boot all work apps
@@ -43,7 +44,7 @@
 ; lastpass
 !^LButton::
 {
-    Send "{Text}UsCD*R:Nu5pW~S!"
+    Send "{Text}" . configMap['savedPassword']
 }
 
 ^+m::
