@@ -1,7 +1,6 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-; #include ./configs.ahk
-#include ../json/general_commands.ahk
+#include configs.ahk
 
 #include work.ahk
 #include random.ahk
