@@ -12,7 +12,12 @@ templateConfigMap := Map(
     )
 )
 
-configFileName := "../json/general_commands_configs.json"
+configDir := "../json/"
+configFileName := configDir . "general_commands_configs.json"
+
+; if folder does not exist, create it
+if not DirExist(configDir)
+    DirCreate(configDir)
 
 ; if config file does not exist, create it
 if not FileExist(configFileName) {
